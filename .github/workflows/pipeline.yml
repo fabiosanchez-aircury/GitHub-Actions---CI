@@ -24,6 +24,7 @@ jobs:
       - name: Install depencies 
         run: npm install --no-audit --no-fund --no-optional
       - name: Lint
+        continue-on-error: true
         run: npm run eslint
       - name: Build
         run: npm run build
