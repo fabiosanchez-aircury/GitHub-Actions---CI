@@ -21,6 +21,10 @@ jobs:
         with:
           node-version: '14'
       - name: Install depencies 
-        run: npm install
+        run: npm install --no-audit --no-fund --no-optional
       - name: Lint
         run: npm run eslint
+      - name: Build
+        run: npm run Build
+      - name: test
+        run: npm test
