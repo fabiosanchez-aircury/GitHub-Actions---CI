@@ -1,17 +1,22 @@
-name: "Deployment Pipeline"
-
 on:
-  push:
-    branches:
-      - master
   pull_request:
-    branches:
-      - master
-    types:
-      - "opened"
+    types: [ opened, synchronize, edited ]
+  push:
+    branches: [preview, master] # TODO: Remove master
 
 jobs:
-  deploy:
+  test:
+    name: Test
+    if: |
+      (
+        'edited' != github.event.pull_request.action
+        && !startsWith(github.event.pull_request.title, 'WIP')
+      )
+      || (
+        'edited' == github.event.pull_request.action
+        && startsWith(github.event.pull_request.changes.title.from, 'WIP')
+        && !startsWith(github.event.pull_request.title, 'WIP')
+      )
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -19,12 +24,12 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: '14'
-      - name: Install depencies 
-        run: npm install --no-audit --no-fund --no-optional
+          node-version: '14' # should be 20 in link
+      - name: Install dependencies 
+        run: npm ci
       - name: Lint
         run: npm run eslint
       - name: Build
-        run: npm run Build
+        run: npm run build
       - name: test
         run: npm test
