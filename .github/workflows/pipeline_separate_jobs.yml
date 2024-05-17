@@ -20,7 +20,7 @@ env:
 
 jobs:
   lint:
-    if: ${{ env.IS_NOT_WIP }}
+    # if: ${{ env.IS_NOT_WIP }}
     name: Lint
     runs-on: ubuntu-20.04
     steps:
@@ -37,7 +37,7 @@ jobs:
         run: npm run eslint
 
   build:
-    if: ${{ env.IS_NOT_WIP }}
+    # if: ${{ env.IS_NOT_WIP }}
     name: Build
     runs-on: ubuntu-20.04
     steps:
@@ -53,7 +53,7 @@ jobs:
         run: npm run build
 
   test:
-    if: ${{ env.IS_NOT_WIP }}
+    # if: ${{ env.IS_NOT_WIP }}
     name: Test
     runs-on: ubuntu-20.04
     steps:
