@@ -13,7 +13,6 @@ const mapResults = (({ results }) => results.map(({ url, name }) => ({
 })))
 
 const App = () => {
-  alert('Un cambio importante en la pr')
   const { data: pokemonList, error, isLoading } = useApi('https://pokeapi.co/api/v2/pokemon/?limit=784', mapResults)
   if (isLoading) {
     return <LoadingSpinner />
