@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: '14' # should be 20 in link
       - name: Install dependencies 
-        run: npm install --no-audit --no-fund --no-optional
+        run: npm ci # npm install --no-audit --no-fund --no-optional
       - name: Lint
         continue-on-error: true
         run: npm run eslint
@@ -36,3 +36,7 @@ jobs:
         run: npm run build
       - name: test
         run: npm test
+      - name: echo event
+        run: |
+          echo ${{github.event_name}}
+          echo ${{github.event_name == 'push'}}
