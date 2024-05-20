@@ -8,19 +8,26 @@ on:
 
 env:
   IS_NOT_WIP: |
-    (
-      'edited' != github.event.pull_request.action
-      && !startsWith(github.event.pull_request.title, 'WIP')
-    )
-    || (
-      'edited' == github.event.pull_request.action
-      && startsWith(github.event.pull_request.changes.title.from, 'WIP')
-      && !startsWith(github.event.pull_request.title, 'WIP')
-    )
 
 jobs:
+
+  set-env:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set the environment variable
+        run: |
+          echo IS_NOT_WIP=${(
+            'edited' != github.event.pull_request.action
+            && !startswith(github.event.pull_request.title, 'wip')
+          )
+          || (
+            'edited' == github.event.pull_request.action
+            && startswith(github.event.pull_request.changes.title.from, 'wip')
+            && !startswith(github.event.pull_request.title, 'wip')
+          )} >> $GITHUB_ENV
+          echo ${{env.IS_NOT_WIP}}
+
   lint:
-    # if: ${{ env.IS_NOT_WIP }}
     name: Lint
     runs-on: ubuntu-20.04
     steps:
@@ -37,7 +44,6 @@ jobs:
         run: npm run eslint
 
   build:
-    # if: ${{ env.IS_NOT_WIP }}
     name: Build
     runs-on: ubuntu-20.04
     steps:
@@ -51,9 +57,13 @@ jobs:
         run: npm ci # npm install --no-audit --no-fund --no-optional
       - name: Build
         run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
 
   test:
-    # if: ${{ env.IS_NOT_WIP }}
+    needs: [lint, build]
     name: Test
     runs-on: ubuntu-20.04
     steps:
@@ -65,19 +75,15 @@ jobs:
           node-version: '14' # should be 20 in link
       - name: Install dependencies 
         run: npm ci # npm install --no-audit --no-fund --no-optional
-      - name: Build
-        run: npm run build
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
       - name: Test
         run: npm test
-  
-  debug:
-    name: debug
+    
+  deploy:
+    needs: [test]
     runs-on: ubuntu-20.04
     steps:
-      - name: echo event
-        run: |
-          echo ${{github}}
-          echo ${{github.event_name == 'push'}}
-      - name: echo IS_NOT_WIP
-        run: |
-          echo ${{env.IS_NOT_WIP}}
+      - run: echo "not an actual deploy"
