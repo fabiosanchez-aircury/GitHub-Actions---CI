@@ -1,4 +1,4 @@
-name: Tests
+name: pipeline
 
 on:
   pull_request:
@@ -6,22 +6,19 @@ on:
   push:
     branches: [preview, master] # TODO: Remove master
 
-env:
-  IS_NOT_WIP: 
-
 jobs:
 
   check-wip:
     if: |
-      ${{ !((
+      ((
         'edited' != github.event.pull_request.action
-        && !startswith(github.event.pull_request.title, 'wip')
+        && !startsWith(github.event.pull_request.title, 'WIP')
       )
       || (
         'edited' == github.event.pull_request.action
-        && startswith(github.event.pull_request.changes.title.from, 'wip')
-        && !startswith(github.event.pull_request.title, 'wip')
-      )) }}
+        && startsWith(github.event.pull_request.changes.title.from, 'WIP')
+        && !startsWith(github.event.pull_request.title, 'WIP')
+      )) == false
     runs-on: ubuntu-20.04
     steps:
       - run: exit 1
