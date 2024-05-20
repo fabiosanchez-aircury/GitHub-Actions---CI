@@ -10,7 +10,7 @@ jobs:
 
   check-wip:
     if: |
-      ((
+      (
         'edited' != github.event.pull_request.action
         && !startsWith(github.event.pull_request.title, 'WIP')
       )
@@ -18,10 +18,10 @@ jobs:
         'edited' == github.event.pull_request.action
         && startsWith(github.event.pull_request.changes.title.from, 'WIP')
         && !startsWith(github.event.pull_request.title, 'WIP')
-      )) == false
+      )
     runs-on: ubuntu-20.04
     steps:
-      - run: exit 1
+      - run: exit 0
 
   lint:
     needs: [check-wip]
