@@ -7,27 +7,27 @@ on:
     branches: [preview, master] # TODO: Remove master
 
 env:
-  IS_NOT_WIP: |
+  IS_NOT_WIP: 
 
 jobs:
 
-  set-env:
+  check-wip:
+    if: |
+      ${{ !((
+        'edited' != github.event.pull_request.action
+        && !startswith(github.event.pull_request.title, 'wip')
+      )
+      || (
+        'edited' == github.event.pull_request.action
+        && startswith(github.event.pull_request.changes.title.from, 'wip')
+        && !startswith(github.event.pull_request.title, 'wip')
+      )) }}
     runs-on: ubuntu-20.04
     steps:
-      - name: Set the environment variable
-        run: |
-          echo IS_NOT_WIP=${(
-            'edited' != github.event.pull_request.action
-            && !startswith(github.event.pull_request.title, 'wip')
-          )
-          || (
-            'edited' == github.event.pull_request.action
-            && startswith(github.event.pull_request.changes.title.from, 'wip')
-            && !startswith(github.event.pull_request.title, 'wip')
-          )} >> $GITHUB_ENV
-          echo ${{env.IS_NOT_WIP}}
+      - run: exit 1
 
   lint:
+    needs: [check-wip]
     name: Lint
     runs-on: ubuntu-20.04
     steps:
@@ -44,6 +44,7 @@ jobs:
         run: npm run eslint
 
   build:
+    needs: [check-wip]
     name: Build
     runs-on: ubuntu-20.04
     steps:
