@@ -23,14 +23,24 @@ jobs:
     steps:
       - run: exit 0
 
+  install:
+    name: "Install node"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version: '14' # should be 20 in link
+      - name: Install dependencies 
+        run: npm ci # npm install --no-audit --no-fund --no-optional
+
   lint:
-    needs: [check-wip]
+    needs: [check-wip, install]
     name: Lint
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           cache: 'npm'
@@ -42,13 +52,11 @@ jobs:
         run: npm run eslint
 
   build:
-    needs: [check-wip]
+    needs: [check-wip, install]
     name: Build
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           cache: 'npm'
@@ -67,7 +75,7 @@ jobs:
     name: Test
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v4
