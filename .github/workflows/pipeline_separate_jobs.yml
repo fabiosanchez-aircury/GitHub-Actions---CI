@@ -104,7 +104,6 @@ jobs:
       - name: Create PostgreSQL instance
         uses: ikalnytskyi/action-setup-postgres@v4
         with:
-          host: postgres
           username: postgres
           password: password
           database: aircury
@@ -112,4 +111,4 @@ jobs:
       - name: test Connection
         run: |
           sudo apt-get install -y postgresql-client
-          pg_isready -d aircury -h postgres -p 5432 -U postgres                      
+          pg_isready -d aircury -h localhost -p 5432 -U postgres                      
