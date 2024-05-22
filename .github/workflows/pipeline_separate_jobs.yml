@@ -58,18 +58,19 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: 'npm'
-          node-version: '14' # should be 20 in link
-      - name: Install dependencies 
-        run: npm ci # npm install --no-audit --no-fund --no-optional
-      - name: Build
-        run: npm run build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist
+      - uses: ./.github/workflows/build.yml
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     cache: 'npm'
+      #     node-version: '14' # should be 20 in link
+      # - name: Install dependencies 
+      #   run: npm ci # npm install --no-audit --no-fund --no-optional
+      # - name: Build
+      #   run: npm run build
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: dist
+      #     path: dist
 
   test:
     needs: [lint, build]
