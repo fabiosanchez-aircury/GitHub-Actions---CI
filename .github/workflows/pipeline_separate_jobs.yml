@@ -54,9 +54,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/build.yml
       # - uses: actions/setup-node@v4
       #   with:
       #     cache: 'npm'
