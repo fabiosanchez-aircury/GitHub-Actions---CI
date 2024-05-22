@@ -82,7 +82,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: 'npm'
-          node-version: '14' # should be 20 in link
+          node-version: '14' 
       - name: Install dependencies 
         run: npm ci # npm install --no-audit --no-fund --no-optional
       - uses: actions/download-artifact@v4
@@ -100,34 +100,16 @@ jobs:
 
   db_test:
     runs-on: ubuntu-22.04
-    env:
-          PGHOST: localhost
-          PGDATABASE: postgres
-          PGUSERNAME: postgres
-          PGPASSWORD: password
     steps:
-      - shell: bash
+      - name: Create PostgreSQL instance
+        uses: ikalnytskyi/action-setup-postgres@v4
+        with:
+          host: postgres
+          username: postgres
+          password: password
+          database: aircury
+        id: postgres
+      - name: test Connection
         run: |
-          echo "$(pg_config --bindir)" >> $GITHUB_PATH
-
-          echo "Initializing database cluster..."
-
-          # Convert backslashes to forward slashes in RUNNER_TEMP for Windows Git Bash
-          export PGHOST="${RUNNER_TEMP//\\//}/postgres"
-          export PGDATA="$PGHOST/pgdata"
-          mkdir -p "$PGDATA"
-
-          # initdb requires file for password in non-interactive mode
-          export PWFILE="$RUNNER_TEMP/pwfile"
-          echo "postgres" > $PWFILE
-          initdb --pgdata="$PGDATA" --username="postgres" --pwfile="$PWFILE"
-
-          echo "Starting PostgreSQL..."
-          echo "unix_socket_directories = '$PGHOST'" >> "$PGDATA/postgresql.conf"
-          pg_ctl start
-
-          echo "Creating user..."
-          psql --host "$PGHOST" --username="postgres" --dbname="postgres" --command="CREATE USER $PGUSERNAME PASSWORD '$PGPASSWORD'" --command="\du"
-
-          echo "Creating database..."
-          createdb --owner="$PGUSERNAME" --username="postgres" "$PGDATABASE"
+          sudo apt-get install -y postgresql-client
+          pg_isready -d aircury -h postgres -p 5432 -U postgres                      
